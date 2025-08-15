@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador de Memoria</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-dark">
+  <header>
+    <div class="head-left">
+      <h1>Simulador de Gestión de Procesos en Memoria</h1>
+      <p>
+        RAM total: <span id="totalRam">1024</span> MB ·
+        Disponible: <span id="availableRam">0</span> MB ·
+        Usada: <span id="usedRam">0</span> MB
+      </p>
+      <div class="bar" aria-label="Uso de RAM">
+        <div id="ramUsedBar" class="bar-used" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="head-right">
+      <button id="btnTheme" title="Cambiar tema">🌗 Tema</button>
+      <button id="btnReset" class="secondary">Resetear</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Crear Proceso</h2>
+      <form id="formCreate" class="grid-form">
+        <label>Nombre (opcional)
+          <input type="text" id="name" placeholder="Proceso X" />
+        </label>
+        <label>Memoria (MB)
+          <input type="number" id="memory" min="1" value="128" required />
+        </label>
+        <label>Duración (s)
+          <input type="number" id="duration" min="1" value="10" required />
+        </label>
+        <button type="submit">Agregar</button>
+      </form>
+
+      <details class="mt">
+        <summary>Agregar en Lote</summary>
+        <form id="formBatch" class="grid-form mt-s">
+          <label>Cantidad
+            <input type="number" id="batchCount" min="1" value="5" />
+          </label>
+          <label>Memoria (rango MB)
+            <div class="two">
+              <input type="number" id="batchMemMin" min="1" value="64" />
+              <input type="number" id="batchMemMax" min="1" value="512" />
+            </div>
+          </label>
+          <label>Duración (rango s)
+            <div class="two">
+              <input type="number" id="batchDurMin" min="1" value="5" />
+              <input type="number" id="batchDurMax" min="1" value="20" />
+            </div>
+          </label>
+          <button type="submit" class="secondary">Generar aleatorios</button>
+        </form>
+      </details>
+
+      <div class="divider"></div>
+
+      <h3>Filtros y ordenación</h3>
+      <div class="filters">
+        <select id="orderBy">
+          <option value="pid">Ordenar por PID</option>
+          <option value="memoryMB">Ordenar por Memoria</option>
+          <option value="remainingSec">Ordenar por Tiempo restante</option>
+          <option value="durationSec">Ordenar por Duración total</option>
+        </select>
+        <select id="orderDir">
+          <option value="asc">Ascendente</option>
+          <option value="desc">Descendente</option>
+        </select>
+        <input id="filterText" type="text" placeholder="Filtrar por nombre..." />
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>En Ejecución</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>PID</th><th>Nombre</th><th>Mem (MB)</th><th>Restante (s)</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tblRunning"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Cola de Espera</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>PID</th><th>Nombre</th><th>Mem (MB)</th><th>Duración (s)</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tblQueue"></tbody>
+      </table>
+    </section>
+
+    <section class="card chart-card">
+      <h2>Uso de RAM (tiempo real)</h2>
+      <canvas id="ramChart" width="800" height="200" aria-label="Gráfico de uso de RAM"></canvas>
+      <div class="legend">
+        <span class="dot used"></span> RAM usada
+      </div>
+    </section>
+
+    <section class="card stats">
+      <h2>Resumen</h2>
+      <div class="stats-grid">
+        <div><span id="statCreated" class="kpi">0</span><small>creados</small></div>
+        <div><span id="statFinished" class="kpi">0</span><small>finalizados</small></div>
+        <div><span id="statCancelled" class="kpi">0</span><small>cancelados</small></div>
+        <div><span id="statRunning" class="kpi">0</span><small>en ejecución</small></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+   <center><small>Ingeniería En Sistemas</small></center> 
+  </footer>
+
+  <div id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
